@@ -1,57 +1,89 @@
 # TP-A59
 
-## Overview
+## Aperçu
 
-This is the code for [this](https://youtu.be/rRssY6FrTvU) video on Youtube by Siraj Raval on Q Learning for Trading as part of the Move 37 course at [School of AI](https://www.theschool.ai). Credits for this code go to [ShuaiW](https://github.com/ShuaiW/teach-machine-to-trade).
+Voici le code associé à [cette vidéo](https://youtu.be/rRssY6FrTvU) sur Youtube par Siraj Raval concernant le Q Learning pour le trading, dans le cadre du cours Move 37 à la [School of AI](https://www.theschool.ai). Les crédits pour ce code reviennent à [ShuaiW](https://github.com/ShuaiW/teach-machine-to-trade).
 
-Related post: [Teach Machine to Trade](https://shuaiw.github.io/2018/02/11/teach-machine-to-trade.html)
+Article associé : [Teach Machine to Trade](https://shuaiw.github.io/2018/02/11/teach-machine-to-trade.html)
 
-### Dependencies
+### Dépendances
 
-Python 2.7. To install all the libraries, run `pip install -r requirements.txt`
+Ce projet prend désormais en charge **Python 3.12.3**.
 
-### Table of content
+Pour configurer votre environnement et installer toutes les bibliothèques requises :
 
-* `agent.py`: a Deep Q learning agent
-* `envs.py`: a simple 3-stock trading environment
-* `model.py`: a multi-layer perceptron as the function approximator
-* `utils.py`: some utility functions
-* `run.py`: train/test logic
-* `requirement.txt`: all dependencies
-* `data/`: 3 csv files with IBM, MSFT, and QCOM stock prices from Jan 3rd, 2000 to Dec 27, 2017 (5629 days). The data was retrieved using [Alpha Vantage API](https://www.alphavantage.co/)
+1. **(Recommandé)** Créez un environnement virtuel :
+
+```bash
+python3.12 -m venv venv
+# Sur macOS/Linux :
+source venv/bin/activate
+# Sur Windows :
+venv\Scripts\activate
+```
+
+2. **Mettez à jour pip (optionnel mais recommandé) :**
+
+    ```bash
+    python -m pip install --upgrade pip
+    ```
+
+3. **Installez les dépendances :**
+
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+> **Remarque :** Si vous rencontrez des problèmes avec certains paquets, assurez-vous que toutes les dépendances dans `requirements.txt` sont compatibles avec Python 3.12.3. Vous devrez peut-être mettre à jour certaines versions de paquets.
+
+### Table des matières
+
+* `agent.py` : un agent Deep Q learning
+* `envs.py` : un environnement de trading simple avec 3 actions
+* `model.py` : un perceptron multicouche comme estimateur de fonction
+* `utils.py` : quelques fonctions utilitaires
+* `run.py` : logique d'entraînement/test
+* `requirements.txt` : toutes les dépendances
+* `data/` : 3 fichiers csv avec les prix des actions IBM, MSFT et QCOM du 3 janvier 2000 au 27 décembre 2017 (5629 jours). Les données ont été récupérées via [Alpha Vantage API](https://www.alphavantage.co/)
 <https://github.com/llSourcell/Q-Learning-for-Trading>
 
-### How to run
+### Comment exécuter
 
-**To train a Deep Q agent**, run `python run.py --mode train`. There are other parameters and I encourage you look at the `run.py` script. After training, a trained model as well as the portfolio value history at episode end would be saved to disk.
-example: python run.py --mode train -e 100 -i 10000 --max_steps 100
+**Pour entraîner un agent Deep Q**, exécutez :
 
-**To test the model performance**, run:
+```bash
+python run.py --mode train
+```
+
+Il existe d'autres paramètres ; consultez le script `run.py` pour plus de détails. Après l'entraînement, un modèle entraîné et l'historique de la valeur du portefeuille à la fin de chaque épisode seront sauvegardés sur le disque.
+
+Exemple :
+
+```bash
+python run.py --mode train -e 100 -i 10000 --max_steps 100
+```
+
+**Pour tester les performances du modèle**, exécutez :
 
 ```bash
 python run.py --mode test --weights <trained_model>
 ```
 
-Replace `<trained_model>` with the path to your trained model weights file (e.g., `weights/202505182127-dqn.weights.h5`). This will evaluate the agent's performance on the test dataset and save the portfolio value history for each episode.
+Remplacez `<trained_model>` par le chemin vers votre fichier de poids du modèle entraîné (par exemple, `weights/202505182127-dqn.weights.h5`). Cela évaluera les performances de l'agent sur le jeu de test et enregistrera l'historique de la valeur du portefeuille pour chaque épisode.
 
-You can specify additional parameters as needed. Here are the main configurable options available in `run.py`:
+Vous pouvez spécifier des paramètres supplémentaires si besoin. Voici les principales options configurables disponibles dans `run.py` :
 
-* `-e`, `--episode`: Number of episodes to run (default: 2000)
+* `-e`, `--episode` : Nombre d'épisodes à exécuter (défaut : 2000)
+* `-b`, `--batch_size` : Taille du batch pour le replay mémoire (défaut : 32)
+* `-i`, `--initial_invest` : Montant de l'investissement initial (défaut : 20000)
+* `-m`, `--mode` : "train" ou "test" (obligatoire)
+* `-w`, `--weights` : Poids du modèle entraîné à charger pour le test
+* `--max_steps` : Nombre maximal d'étapes par épisode (défaut : None)
 
-* `-b`, `--batch_size`: Batch size for memory replay (default: 32)
-
-* `-i`, `--initial_invest`: Initial investment amount (default: 20000)
-
-* `-m`, `--mode`: "train" or "test" (required)
-
-* `-w`, `--weights`: Trained model weights to load for test
-  
-* `--max_steps`: Maximum steps per episode (default: None)
-
-**Example usage:**
+**Exemple d'utilisation :**
 
 ```bash
 python run.py --mode test --weights weights/202505182127-dqn.weights.h5 --max_steps 500 --episode 50 --batch_size 64 --initial_invest 50000
 ```
 
-For a full list of configurable options and their descriptions, see the details in `run.py`.
+Pour la liste complète des options configurables et leurs descriptions, consultez les détails dans `run.py`.
