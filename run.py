@@ -116,7 +116,7 @@ def main():
         plt.grid(True)
         plt.tight_layout()
         plt.savefig(f'portfolio_val/{timestamp}_trading_plot.png')
-        plt.show()
+        #plt.show()
 
         # Courbe du prix de l'action avec les points d'achat/vente
         plt.figure(figsize=(12, 6))
