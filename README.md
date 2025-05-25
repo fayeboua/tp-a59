@@ -19,10 +19,13 @@ Python 2.7. To install all the libraries, run `pip install -r requirements.txt`
 * `run.py`: train/test logic
 * `requirement.txt`: all dependencies
 * `data/`: 3 csv files with IBM, MSFT, and QCOM stock prices from Jan 3rd, 2000 to Dec 27, 2017 (5629 days). The data was retrieved using [Alpha Vantage API](https://www.alphavantage.co/)
+https://github.com/llSourcell/Q-Learning-for-Trading
 
 
 ### How to run
 
 **To train a Deep Q agent**, run `python run.py --mode train`. There are other parameters and I encourage you look at the `run.py` script. After training, a trained model as well as the portfolio value history at episode end would be saved to disk.
+example: python run.py --mode train -e 100 -i 10000 --max_steps 100
 
 **To test the model performance**, run `python run.py --mode test --weights <trained_model>`, where `<trained_model>` points to the local model weights file. Test data portfolio value history at episode end would be saved to disk.
+example: python run.py --mode test --weights weights/202505182127-dqn.weights.h5 --max_steps 500
