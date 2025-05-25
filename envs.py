@@ -18,6 +18,9 @@ class TradingEnv(gym.Env):
 
     metadata = {"render.modes": ["human"]}
 
+    # train_data : matrice numpy de taille (n_stock, n_step) représentant les prix historiques.
+    # init_invest : investissement initial de l'agent (en cash)
+    # max_steps : nombre maximum d'étapes dans un épisode
     def __init__(self, train_data, init_invest=20000, max_steps=200):
         assert init_invest > 0, "Initial investment must be positive"
         self.stock_price_history = np.around(train_data).astype(int)
@@ -48,6 +51,8 @@ class TradingEnv(gym.Env):
         self.np_random, seed = seeding.np_random(seed)
         return [seed]
 
+    # Choisit un point de départ aléatoire dans la série temporelle
+    # Initialise : portefeuille vide, cash, prix initial
     def reset(self):
         self.start_step = self.np_random.integers(0, self.n_step - self.max_steps)
         self.cur_step = self.start_step
@@ -56,6 +61,13 @@ class TradingEnv(gym.Env):
         self.cash_in_hand = self.init_invest
         return self._get_obs()
 
+    # Applique l'action (décode via _trade)
+    # Calcule la récompense : variation de valeur de portefeuille
+    # Retourne :
+    #   l’observation (état),
+    #   la récompense,
+    #   si l’épisode est fini (done),
+    #   des infos utiles (prix, action, portefeuille)
     def step(self, action):
         assert self.action_space.contains(action), f"Invalid action: {action}"
 
@@ -76,28 +88,29 @@ class TradingEnv(gym.Env):
             "stock_owned": self.stock_owned.copy(),
             "cash_in_hand": self.cash_in_hand
         }
-
         return obs, reward, done, info
 
+    # Concatène les stocks détenus, prix actuels et cash → observation complète
     def _get_obs(self):
         obs = np.concatenate((self.stock_owned, self.stock_price, [self.cash_in_hand]))
         return obs.astype(int)
 
+    # Calcule la valeur totale du portefeuille à un instant donné
     def _get_val(self):
         return int(np.sum(self.stock_owned * self.stock_price) + self.cash_in_hand)
 
     def _trade(self, action):
-        # Action decoding
+        # Décode l’action entière en un vecteur [0, 1, 2]^n_stock
         action_vec = list(itertools.product([0, 1, 2], repeat=self.n_stock))[action]
         sell_index = [i for i, a in enumerate(action_vec) if a == 0]
         buy_index = [i for i, a in enumerate(action_vec) if a == 2]
 
-        # Sell first
+        # Vend d’abord les actions sélectionnées
         for i in sell_index:
             self.cash_in_hand += self.stock_price[i] * self.stock_owned[i]
             self.stock_owned[i] = 0
 
-        # Buy as much as possible
+        # Essaie d’acheter autant que possible les actions demandées, en boucle (tant que le cash le permet)
         can_buy = True
         while can_buy and buy_index:
             can_buy = False
