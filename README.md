@@ -15,11 +15,11 @@ Pour configurer votre environnement et installer toutes les bibliothèques requi
 1. **(Recommandé)** Créez un environnement virtuel :
 
 ```bash
-python3.12 -m venv venv
+python3.12 -m venv myenv
 # Sur macOS/Linux :
-source venv/bin/activate
+source myenv/bin/activate
 # Sur Windows :
-venv\Scripts\activate
+myenv\Scripts\activate
 ```
 
 2. **Mettez à jour pip (optionnel mais recommandé) :**
